@@ -1,19 +1,8 @@
----
-title: "Statistical Inference: Simulation Exercise"
-author: "Thomas Bell"
-date: "20 september 2017"
-output:
-  html_document: 
-    keep_md: yes
-  pdf_document: default
----
+# Statistical Inference: Simulation Exercise
+Thomas Bell  
+20 september 2017  
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-library(ggplot2)
-library(knitr)
-library(reshape2)
-```
+
 
 # Overview
 In this analysis the exponential distribution in R is compared with the Central Limit Theorem (CLT). The exponential distribution is simulated in R with rexp(n, lambda) where lambda is the rate parameter. The mean of exponential distribution is 1/lambda and the standard deviation is also 1/lambda.
@@ -25,7 +14,8 @@ The analysis underlined the theory: with an increased number of simulations, the
 # Simulations
 In this section the exponential distribution is explored and simulations are prepared for further analysis. The seed is set to be able to reproduce simulations. Lambda is set to 0.2 and the number of exponentials is n = 40.
 
-```{r params}
+
+```r
 set.seed(1)
 lambda <- .2
 n <- 40
@@ -33,13 +23,18 @@ n <- 40
 
 To refresh our minds we first plot the exponential distribution. The subsequent figure shows that when the number of exponentials is increased, the random generated distribution takes the shape of the exponential distribution.
 
-```{r exponential}
+
+```r
 #To refresh our mind we show how an exponential distribution looks
 df <- data.frame(x=seq(0,40,by=.2))
 ggplot(df) + 
   stat_function(aes(x),fun=dexp, size = 1) + 
   ggtitle("Exponential distribution with density 0.2")
+```
 
+![](StatisticalInference_files/figure-html/exponential-1.png)<!-- -->
+
+```r
 #By increasing n the distribution approximates the exponential distribution
 df <- melt(data.frame(
   "n40" = rexp(40, lambda),
@@ -53,9 +48,12 @@ ggplot(df, aes(x = value)) +
   ggtitle("Random deviates with increasing exponentials")
 ```
 
+![](StatisticalInference_files/figure-html/exponential-2.png)<!-- -->
+
 For the remainder of the analysis a distribution of averages is created of 1000 simulations of 40 exponentials with density 0.2.
 
-```{r simulations}
+
+```r
 #For this research we proceed with an n of 40 for which we run a 1000 simulations for which we will investigate the distribution of the means
 mns = NULL
 for (i in 1 : 1000) mns = c(mns, mean(rexp(n, lambda)))
@@ -65,7 +63,8 @@ mns <- as.data.frame(mns)
 # Sample Mean versus Theoretical Mean
 In this section the sample mean is compared with the theoretical mean for the exponential distribution.
 
-```{r compare-mean}
+
+```r
 #theoretical mean for exponentially distributed random variables with rate parameter lambda is E[X] = 1 / lambda = beta
 theoretical_mean <- 1 / lambda
 
@@ -75,13 +74,14 @@ sample_mean <- mean(mns$mns)
 
 Theoretical mean for exponentially distributed random variables with rate parameter lambda is: E[X] = 1 / lambda = beta
 
-For our example this results in: E[X] = 1 / `r lambda` = `r theoretical_mean`
+For our example this results in: E[X] = 1 / 0.2 = 5
 
-The sample mean of our distribution of averages is `r sample_mean`
+The sample mean of our distribution of averages is 4.989162
 
 In the following figure a histogram is plotted for the distribution of averages. Here it can be seen that the distribution is centered around the theoretical mean, highlighted with the vertical red line.
 
-``` {r mean-plot}
+
+```r
 ggplot(mns, aes(mns)) + 
         geom_histogram(bins = 40, aes(y=..density..), col = "white", fill = "navy") + 
         geom_density(col = "green") + 
@@ -89,10 +89,13 @@ ggplot(mns, aes(mns)) +
         ggtitle("Histogram of distribution of averages")
 ```
 
+![](StatisticalInference_files/figure-html/mean-plot-1.png)<!-- -->
+
 # Sample Variance versus Theoretical Variance
 In this section the sample variance is compared with the theoretical variance for the exponential distribution.
 
-```{r compare-variance}
+
+```r
 #theoretical variance for exponentially distributed random variables with rate parameter lambda is Var[X] = (1 / lambda^2) / n = beta^2
 theoretical_var <- (1 / lambda^2) / n
 
@@ -102,19 +105,20 @@ sample_var <- var(mns$mns)
 
 The theoretical population variance for exponentially distributed random variables is equal to Var[X] = 1 / lambda^2 = beta^2.
 
-Which in our case is 1 / `r lambda`^2 = `r 1/lambda^2` 
+Which in our case is 1 / 0.2^2 = 25 
 
 By dividing by the number of exponentials n, the theoretical variance for the distribution of averages can be calculated Var[Xbar] = (1 / lambda^2) / n = beta^2
 
-For our example this results in: Var[Xbar]  = (1 / `r lambda`^2) / `r n` = `r theoretical_var`
+For our example this results in: Var[Xbar]  = (1 / 0.2^2) / 40 = 0.625
 
-The sample variance of our distribution of averages is `r sample_var`, very close to our theoretical variance.
+The sample variance of our distribution of averages is 0.6300226, very close to our theoretical variance.
 
 Variance is the average squared distance from the mean. According to the CLT, when the sample size n increases, observations become more centered around the mean. This also means that the average distance from the mean decreases. This is underlined by the theoretical formula for Var[Xbar], with n being the divider the output becomes smaller as n increases.
 
 To summarise this part of the analysis theoretical and sample mean and variance are provided in the table below.
 
-```{r compare-table}
+
+```r
 Statistic <- c("Mean","Variance")
 Sample <- c(round(sample_mean,2),round(sample_var,2))
 Theoretical <- c(theoretical_mean,theoretical_var)
@@ -122,10 +126,18 @@ stat_table <- data.frame(Statistic,Sample,Theoretical)
 kable(stat_table)
 ```
 
+
+
+Statistic    Sample   Theoretical
+----------  -------  ------------
+Mean           4.99         5.000
+Variance       0.63         0.625
+
 # Distribution
 Via figures and text, explain how one can tell the distribution is approximately normal.
 
-```{r sim-normal}
+
+```r
 sim_mns <- function(x) {
         out = NULL
         for (i in 1 : x) out = c(out, mean(rexp(n, lambda)))
@@ -144,6 +156,8 @@ ggplot(df, aes(x = value)) +
   stat_function(geom = "line", fun = dnorm, args = list(mean = 1/lambda, sd = (1/lambda)/sqrt(n)), col = "red") +
   ggtitle("Distributions of averages approximating normal distribution")
 ```
+
+![](StatisticalInference_files/figure-html/sim-normal-1.png)<!-- -->
 
 
 
