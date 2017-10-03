@@ -1,0 +1,32 @@
+---
+title: "Basic Inferential Data Analysis Instructions"
+author: "Thomas Bell"
+date: "2 oktober 2017"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Overview
+
+
+# Data load, basic exploratory analyses and summary
+```{r data}
+data("ToothGrowth")
+dim(ToothGrowth)
+summary(ToothGrowth)
+```
+
+len: Tooth length
+supp: Supplement type (VC or OJ).
+dose: numeric Dose in milligrams/day
+
+# Confidence intervals and/or hypothesis tests to compare tooth growth by supp and dose
+
+
+
+# Conclusions
