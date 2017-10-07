@@ -84,7 +84,7 @@ In the following figure a histogram is plotted for the distribution of averages.
 ```r
 ggplot(mns, aes(mns)) + 
         geom_histogram(bins = 40, aes(y=..density..), col = "white", fill = "navy") + 
-        geom_density(col = "green") + 
+        geom_density(col = "green", size = 1) + 
         geom_vline(aes(xintercept=theoretical_mean), col = "red") +
         ggtitle("Histogram of distribution of averages")
 ```
@@ -120,8 +120,8 @@ To summarise this part of the analysis theoretical and sample mean and variance 
 
 ```r
 Statistic <- c("Mean","Variance")
-Sample <- c(round(sample_mean,2),round(sample_var,2))
-Theoretical <- c(theoretical_mean,theoretical_var)
+Sample <- c(round(sample_mean,3),round(sample_var,3))
+Theoretical <- c(round(theoretical_mean,3),round(theoretical_var,3))
 stat_table <- data.frame(Statistic,Sample,Theoretical)
 kable(stat_table)
 ```
@@ -130,11 +130,15 @@ kable(stat_table)
 
 Statistic    Sample   Theoretical
 ----------  -------  ------------
-Mean           4.99         5.000
-Variance       0.63         0.625
+Mean          4.989         5.000
+Variance      0.630         0.625
 
 # Distribution
-Via figures and text, explain how one can tell the distribution is approximately normal.
+The CLT entails that the distribution of means of iid variables tends towards a normal distribution, even if the original variables themselves are not normally distributed. In this analysis the original distributions were exponential.By taking the mean of each exponential distribution we create a new distribution in itself, the sample. Because we know that the sample approximates a normal distribution, probabilistic and statistical methods can be used to tell something about the population the sample was taken from.
+
+If we plot a histogram of the distribution of averages for 10 simulations, the averages are not clearly centered around the mean. Increasing the number of simulations to 100 and subsequently to 1000, the bell-shaped curve which is associated with the normal distribution becomes visible.
+
+The normal distribution is also a symmetrical distribution. Meaning the distribution is identically shaped on both sides of the mean. To illustrate this a vertical line is plotted on the theoretical mean. It can be seen that the bell-curves are indeed symmetrical and that these are normal distributions.
 
 
 ```r
@@ -144,37 +148,24 @@ sim_mns <- function(x) {
         out
 }
 
+set.seed(200)
 df <- melt(data.frame(
-  "sim40" = sim_mns(40),
+  "sim10" = sim_mns(10),
   "sim100" = sim_mns(100),
   "sim1000" = sim_mns(1000)
-), measure.vars = c("sim40", "sim100", "sim1000"))
+), measure.vars = c("sim10", "sim100", "sim1000"))
 
 ggplot(df, aes(x = value)) + 
   geom_histogram(bins = 20, col = "white", fill = "navy", aes(y = ..density..)) + 
   facet_wrap(~variable, scales = "free_y") +
-  stat_function(geom = "line", fun = dnorm, args = list(mean = 1/lambda, sd = (1/lambda)/sqrt(n)), col = "red") +
+  stat_function(geom = "line", fun = dnorm, args = list(mean = 1/lambda, sd = (1/lambda)/sqrt(n)), col = "green", size = 1) +
+  geom_vline(aes(xintercept=theoretical_mean), col = "red") +
   ggtitle("Distributions of averages approximating normal distribution")
 ```
 
 ![](StatisticalInference_files/figure-html/sim-normal-1.png)<!-- -->
 
+# Conclusion
+This analysis showed that creating a distribution of averages from iid variables is in itself a distribution that behaves like a standard normal distribution. The sample mean and variance are good estimators of the population mean and variance as they closely match the theoretical population mean and variance.
 
-
-
-
-
-
-## Review criteria TEMP
-
-*Did you show where the distribution is centered at and compare it to the theoretical center of the distribution?
-*Did you show how variable it is and compare it to the theoretical variance of the distribution?
-*Did you perform an exploratory data analysis of at least a single plot or table highlighting basic features of the data?
-*Did the student perform some relevant confidence intervals and/or tests?
-*Were the results of the tests and/or intervals interpreted in the context of the problem correctly?
-*Did the student describe the assumptions needed for their conclusions?
-
-
-https://github.com/lgreski/datasciencectacontent/commit/47ec7efbf3b382562a4aae6f3ac3e6303f3430c5
-
-https://github.com/lgreski/datasciencectacontent/blob/master/markdown/kableDataFrameTable.md
+Following the CLT the distribution of averages converges to the normal distribution.

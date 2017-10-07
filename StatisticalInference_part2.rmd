@@ -9,24 +9,61 @@ output:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(reshape2)
+library(dplyr)
 ```
 
 # Overview
-
+The Effect of Vitamin C on Tooth Growth in Guinea Pigs
+The response is the length of odontoblasts (cells responsible for tooth growth) in 60 guinea pigs. Each animal received one of three dose levels of vitamin C (0.5, 1, and 2 mg/day) by one of two delivery methods, (orange juice or ascorbic acid (a form of vitamin C and coded as VC).
 
 # Data load, basic exploratory analyses and summary
+The ToothGrowth data set is loaded into the runtime memory of R.
+
 ```{r data}
 data("ToothGrowth")
 dim(ToothGrowth)
 summary(ToothGrowth)
 ```
+Descriptions of the variables in the data set:
+* len: Tooth length
+* supp: Supplement type (VC or OJ).
+* dose: numeric Dose in milligrams/day
 
-len: Tooth length
-supp: Supplement type (VC or OJ).
-dose: numeric Dose in milligrams/day
+Exploratory analysis; plotting the tooth length against the various doses of orange juice (OJ) and asorbic acid (VC) shows that tooth lenght increases with higher doses of supplements containing vitamin C. The red dots have the upper hand in the plot, which tells that orange juice is results in greated tooth growth.  
+
+```{r explore}
+ggplot(ToothGrowth, aes(x = as.factor(dose), y = len, col = supp, shape = supp)) + 
+  geom_jitter(stat="identity", size = 2) + 
+  labs(x = "Dose in milligrams/day", y = "Tooth length")
+```
+
+
+
 
 # Confidence intervals and/or hypothesis tests to compare tooth growth by supp and dose
+In this section we will validate the exploratory analysis results by calculating a t-confidence interval for independent groups. Independent because the 
 
+```{r OJVC}
+subset(ToothGrowth, ToothGrowth$supp == "VC") -> VC
+subset(ToothGrowth, ToothGrowth$supp == "OJ") -> OJ
+
+t.test(OJ$len, VC$len, paired = FALSE, var.equal = FALSE, alternative = "greater")
+```
+
+
+```{r dosage}
+subset(VC, VC$dose == 2.0) -> VC_high
+subset(VC, VC$dose == 1.0) -> VC_med
+subset(VC, VC$dose == 0.5) -> VC_low
+
+subset(OJ, OJ$dose == 2.0) -> OJ_high
+subset(OJ, OJ$dose == 1.0) -> OJ_med
+subset(OJ, OJ$dose == 0.5) -> OJ_low
+
+
+```
 
 
 # Conclusions
