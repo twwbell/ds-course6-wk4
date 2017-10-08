@@ -1,9 +1,8 @@
 ---
-title: "Basic Inferential Data Analysis Instructions"
+title: 'Statistical Analysis: Effect of Vitamin C on Tooth Growth'
 author: "Thomas Bell"
-date: "2 oktober 2017"
+date: "7 October 2017"
 output:
-  html_document: default
   pdf_document: default
 ---
 
@@ -12,13 +11,15 @@ knitr::opts_chunk$set(echo = TRUE)
 library(ggplot2)
 library(reshape2)
 library(dplyr)
+library(knitr)
 ```
 
 # Overview
-The Effect of Vitamin C on Tooth Growth in Guinea Pigs
+This analysis looks at the effect of vitamin C on tooth growth in Guinea pigs.
+
 The response is the length of odontoblasts (cells responsible for tooth growth) in 60 guinea pigs. Each animal received one of three dose levels of vitamin C (0.5, 1, and 2 mg/day) by one of two delivery methods, (orange juice or ascorbic acid (a form of vitamin C and coded as VC).
 
-# Data load, basic exploratory analyses and summary
+# Exploratory Analysis
 The ToothGrowth data set is loaded into the runtime memory of R.
 
 ```{r data}
@@ -26,12 +27,14 @@ data("ToothGrowth")
 dim(ToothGrowth)
 summary(ToothGrowth)
 ```
+
 Descriptions of the variables in the data set:
+
 * len: Tooth length
 * supp: Supplement type (VC or OJ).
 * dose: numeric Dose in milligrams/day
 
-Exploratory analysis; plotting the tooth length against the various doses of orange juice (OJ) and asorbic acid (VC) shows that tooth lenght increases with higher doses of supplements containing vitamin C. The red dots have the upper hand in the plot, which tells that orange juice is results in greated tooth growth.  
+Exploratory analysis; plotting the tooth length against the various doses of orange juice (OJ) and asorbic acid (VC) shows that tooth lenght increases with higher doses of supplements containing vitamin C. The red dots have the upper hand in the plot, which hints that OJ has a greater effect on tooth growth than VC. This will be further analysed through hypothesis testing.  
 
 ```{r explore}
 ggplot(ToothGrowth, aes(x = as.factor(dose), y = len, col = supp, shape = supp)) + 
@@ -39,21 +42,43 @@ ggplot(ToothGrowth, aes(x = as.factor(dose), y = len, col = supp, shape = supp))
   labs(x = "Dose in milligrams/day", y = "Tooth length")
 ```
 
+# Hypothesis Tests
+In this section we will validate the exploratory analysis results by calculating a t-confidence interval for independent groups. Independent because the Guinea pigs were divided in 6 groups, 3 for each dose, times two for OJ and VC.
 
-
-
-# Confidence intervals and/or hypothesis tests to compare tooth growth by supp and dose
-In this section we will validate the exploratory analysis results by calculating a t-confidence interval for independent groups. Independent because the 
-
-```{r OJVC}
+```{r split}
 subset(ToothGrowth, ToothGrowth$supp == "VC") -> VC
 subset(ToothGrowth, ToothGrowth$supp == "OJ") -> OJ
+```
 
+The first test compares the average length of all doses together. Parameters for the tests:
+
+$\mu OJ$ = `r round(mean(OJ$len),3)`, $\sigma OJ$ = `r round(sd(OJ$len),3)`
+
+$\mu VC$ = `r round(mean(VC$len),3)`, $\sigma VC$ = `r round(sd(VC$len),3)`
+
+$\alpha$ = 0.05
+
+$n$ = 30
+
+We assume the status quo that the average tooth growth is the same for the OJ as for the VC group.
+
+$H_0$ : $\mu OJ$ = $\mu VC$
+
+our alternative hypothesis is that OJ has a greater effect on tooth growth than VC 
+
+$H_a$ : $\mu OJ$ > $\mu VC$
+
+The exploratory analysis showed that the OJ data points are above VC, therefore we indicate a direction in the alternative hypothesis (greater than) and perform a single sided t-test. The sigmas of both groups indicate that the variances are not equal.
+
+```{r OJVC-test}
 t.test(OJ$len, VC$len, paired = FALSE, var.equal = FALSE, alternative = "greater")
 ```
 
+This test shows that $H_0$ should be rejected. The p-value of 0.03 is smaller than the confidence level of 5%. This means there is a 3% chance that the status quo is true. This is considered insignificant. The alternative hypothesis is accepted: OJ has a greater effect on tooth growth than VC.
 
-```{r dosage}
+In the next series of tests we repeat the same t-test but then for the different doses (2.0, 1.0, 0.5 mg/day). The results are displayed in a summary table.
+
+```{r dose-test}
 subset(VC, VC$dose == 2.0) -> VC_high
 subset(VC, VC$dose == 1.0) -> VC_med
 subset(VC, VC$dose == 0.5) -> VC_low
@@ -62,8 +87,36 @@ subset(OJ, OJ$dose == 2.0) -> OJ_high
 subset(OJ, OJ$dose == 1.0) -> OJ_med
 subset(OJ, OJ$dose == 0.5) -> OJ_low
 
+t.test(OJ_high$len, VC_high$len, 
+       paired = FALSE, 
+       var.equal = FALSE, 
+       alternative = "greater") -> t_high
+t.test(OJ_med$len, VC_med$len, 
+       paired = FALSE, 
+       var.equal = FALSE, 
+       alternative = "greater") -> t_med
+t.test(OJ_low$len, VC_low$len, 
+       paired = FALSE, var.equal = FALSE, 
+       alternative = "greater") -> t_low
 
+Dose <- c("2.0 mg/day","1.0 mg/day", "0.5 mg/day")
+p_value <- c(round(t_high$p.value,3),round(t_med$p.value,3),round(t_low$p.value,3))
+alpha <- 0.05
+Conclusion <- c("Accept $H_0$ : p-value greater than confidence level; 5,18%", 
+                "Reject $H_0$ : p-value smaller than confidence level; accept $H_a$", 
+                "same as above")
+stat_table <- data.frame(Dose,p_value,alpha,Conclusion)
+kable(stat_table)
 ```
 
-
 # Conclusions
+The scatter plot in the exploratory analysis section gave the indication that orange juice (OJ) on average has a greater effect on tooth growth of Guinea pigs than asorbic acid (VC).
+
+When observing the treatment doses individually, it seems that OJ is greater than VC for 0.5 and 1.0 mg/day. For 2.0 mg/day it cannot be seen clearly as VC seems to have a few outliers in both directions.
+
+Through hypothesis testing and confidence intervals the following conclusions were drawn:
+
+* Overall OJ has greater effect on tooth growth than VC
+* With a dose of 2.0 mg/day there is no significant evidence that OJ has a greater effect than VC, therefore the status quo remains valid for this dose
+* With a dose of 1.0 mg/day it is very likely that OJ has a greater effect on tooth growth than VC
+* With a dose of 0.5 mg/day it is very likely that OJ has a greater effect on tooth growth than VC

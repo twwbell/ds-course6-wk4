@@ -1,6 +1,6 @@
 # Statistical Inference: Simulation Exercise
 Thomas Bell  
-20 september 2017  
+7 October 2017  
 
 
 
@@ -12,7 +12,7 @@ The CLT states that the distribution of averages of independant and indentically
 The analysis underlined the theory: with an increased number of simulations, the distribution of averages approximates the standard normal distribution 
 
 # Simulations
-In this section the exponential distribution is explored and simulations are prepared for further analysis. The seed is set to be able to reproduce simulations. Lambda is set to 0.2 and the number of exponentials is n = 40.
+In this section the exponential distribution is explored and simulations are prepared for further analysis. The seed is set to be able to reproduce simulations. Lambda is set to 0.2 and the number of exponentials is $n$ = 40.
 
 
 ```r
@@ -72,9 +72,9 @@ theoretical_mean <- 1 / lambda
 sample_mean <- mean(mns$mns)
 ```
 
-Theoretical mean for exponentially distributed random variables with rate parameter lambda is: E[X] = 1 / lambda = beta
+Theoretical mean for exponentially distributed random variables with rate parameter lambda is: $E[\bar{X}] = 1 / \lambda = \beta$
 
-For our example this results in: E[X] = 1 / 0.2 = 5
+For our example this results in: $E[X] = 1 / 0.2 = 5$
 
 The sample mean of our distribution of averages is 4.989162
 
@@ -103,17 +103,17 @@ theoretical_var <- (1 / lambda^2) / n
 sample_var <- var(mns$mns)
 ```
 
-The theoretical population variance for exponentially distributed random variables is equal to Var[X] = 1 / lambda^2 = beta^2.
+The theoretical population variance for exponentially distributed random variables is equal to $Var[X] = 1 / \lambda^2 = \beta^2$
 
-Which in our case is 1 / 0.2^2 = 25 
+Which in our case is $Var[X] = 1 / 0.2^2 = 25$ 
 
-By dividing by the number of exponentials n, the theoretical variance for the distribution of averages can be calculated Var[Xbar] = (1 / lambda^2) / n = beta^2
+By dividing by the number of exponentials n, the theoretical variance for the distribution of averages can be calculated $Var[\bar{X}] = (1 / \lambda^2) / n = \beta^2$
 
-For our example this results in: Var[Xbar]  = (1 / 0.2^2) / 40 = 0.625
+For our example this results in: $Var[\bar{X}]  = (1 / 0.2^2) / 40 = 0.625$
 
 The sample variance of our distribution of averages is 0.6300226, very close to our theoretical variance.
 
-Variance is the average squared distance from the mean. According to the CLT, when the sample size n increases, observations become more centered around the mean. This also means that the average distance from the mean decreases. This is underlined by the theoretical formula for Var[Xbar], with n being the divider the output becomes smaller as n increases.
+Variance is the average squared distance from the mean. According to the CLT, when the sample size n increases, observations become more centered around the mean. This also means that the average distance from the mean decreases. This is underlined by the theoretical formula for $Var[\bar{X}]$, with n being the divider the output becomes smaller as n increases.
 
 To summarise this part of the analysis theoretical and sample mean and variance are provided in the table below.
 

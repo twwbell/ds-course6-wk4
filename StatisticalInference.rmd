@@ -1,11 +1,11 @@
 ---
-title: "Statistical Inference: Simulation Exercise"
+title: 'Statistical Inference: Simulation Exercise'
 author: "Thomas Bell"
-date: "20 september 2017"
+date: "7 October 2017"
 output:
-  html_document: 
-    keep_md: yes
   pdf_document: default
+  html_document:
+    keep_md: yes
 ---
 
 ```{r setup, include=FALSE}
@@ -24,7 +24,7 @@ The CLT states that the distribution of averages of independant and indentically
 The analysis underlined the theory: with an increased number of simulations, the distribution of averages approximates the standard normal distribution 
 
 # Simulations
-In this section the exponential distribution is explored and simulations are prepared for further analysis. The seed is set to be able to reproduce simulations. Lambda is set to 0.2 and the number of exponentials is n = 40.
+In this section the exponential distribution is explored and simulations are prepared for further analysis. The seed is set to be able to reproduce simulations. Lambda is set to 0.2 and the number of exponentials is $n = 40$.
 
 ```{r params}
 set.seed(1)
@@ -57,7 +57,8 @@ ggplot(df, aes(x = value)) +
 For the remainder of the analysis a distribution of averages is created of 1000 simulations of 40 exponentials with density 0.2.
 
 ```{r simulations}
-#For this research we proceed with an n of 40 for which we run a 1000 simulations for which we will investigate the distribution of the means
+#For this research we proceed with an n of 40 for which we run a 1000
+#simulations for which we will investigate the distribution of the means
 mns = NULL
 for (i in 1 : 1000) mns = c(mns, mean(rexp(n, lambda)))
 mns <- as.data.frame(mns)
@@ -67,16 +68,17 @@ mns <- as.data.frame(mns)
 In this section the sample mean is compared with the theoretical mean for the exponential distribution.
 
 ```{r compare-mean}
-#theoretical mean for exponentially distributed random variables with rate parameter lambda is E[X] = 1 / lambda = beta
+#theoretical mean for exponentially distributed random variables with rate 
+#parameter lambda is E[X] = 1 / lambda = beta
 theoretical_mean <- 1 / lambda
 
 #sample mean is the mean of 1000 means
 sample_mean <- mean(mns$mns)
 ```
 
-Theoretical mean for exponentially distributed random variables with rate parameter lambda is: E[X] = 1 / lambda = beta
+Theoretical mean for exponentially distributed random variables with rate parameter lambda is: $E[\bar{X}] = 1 / \lambda = \beta$
 
-For our example this results in: E[X] = 1 / `r lambda` = `r theoretical_mean`
+For our example this results in: $E[\bar{X}] = 1 / `r lambda` = `r theoretical_mean`$
 
 The sample mean of our distribution of averages is `r sample_mean`
 
@@ -94,24 +96,25 @@ ggplot(mns, aes(mns)) +
 In this section the sample variance is compared with the theoretical variance for the exponential distribution.
 
 ```{r compare-variance}
-#theoretical variance for exponentially distributed random variables with rate parameter lambda is Var[X] = (1 / lambda^2) / n = beta^2
+#theoretical variance for exponentially distributed random variables with
+#rate parameter lambda is Var[X] = (1 / lambda^2) / n = beta^2
 theoretical_var <- (1 / lambda^2) / n
 
 #sample variance is the power of sd of 1000 sds
 sample_var <- var(mns$mns)
 ```
 
-The theoretical population variance for exponentially distributed random variables is equal to Var[X] = 1 / lambda^2 = beta^2.
+The theoretical population variance for exponentially distributed random variables is equal to $Var[X] = 1 / \lambda^2 = \beta^2$
 
-Which in our case is 1 / `r lambda`^2 = `r 1/lambda^2` 
+Which in our case is $Var[X] = 1 / `r lambda`^2 = `r 1/lambda^2`$ 
 
-By dividing by the number of exponentials n, the theoretical variance for the distribution of averages can be calculated Var[Xbar] = (1 / lambda^2) / n = beta^2
+By dividing by the number of exponentials n, the theoretical variance for the distribution of averages can be calculated $Var[\bar{X}] = (1 / \lambda^2) / n = \beta^2$
 
-For our example this results in: Var[Xbar]  = (1 / `r lambda`^2) / `r n` = `r theoretical_var`
+For our example this results in: $Var[\bar{X}]  = (1 / `r lambda`^2) / `r n` = `r theoretical_var`$
 
 The sample variance of our distribution of averages is `r sample_var`, very close to our theoretical variance.
 
-Variance is the average squared distance from the mean. According to the CLT, when the sample size n increases, observations become more centered around the mean. This also means that the average distance from the mean decreases. This is underlined by the theoretical formula for Var[Xbar], with n being the divider the output becomes smaller as n increases.
+Variance is the average squared distance from the mean. According to the CLT, when the sample size n increases, observations become more centered around the mean. This also means that the average distance from the mean decreases. This is underlined by the theoretical formula for $Var[\bar{X}]$, with n being the divider the output becomes smaller as n increases.
 
 To summarise this part of the analysis theoretical and sample mean and variance are provided in the table below.
 
@@ -145,9 +148,15 @@ df <- melt(data.frame(
 ), measure.vars = c("sim10", "sim100", "sim1000"))
 
 ggplot(df, aes(x = value)) + 
-  geom_histogram(bins = 20, col = "white", fill = "navy", aes(y = ..density..)) + 
+  geom_histogram(bins = 20, 
+                 col = "white", 
+                 fill = "navy", 
+                 aes(y = ..density..)) + 
   facet_wrap(~variable, scales = "free_y") +
-  stat_function(geom = "line", fun = dnorm, args = list(mean = 1/lambda, sd = (1/lambda)/sqrt(n)), col = "green", size = 1) +
+  stat_function(geom = "line", fun = dnorm, 
+                args = list(mean = 1/lambda, 
+                            sd = (1/lambda)/sqrt(n)), 
+                col = "green", size = 1) +
   geom_vline(aes(xintercept=theoretical_mean), col = "red") +
   ggtitle("Distributions of averages approximating normal distribution")
 ```
